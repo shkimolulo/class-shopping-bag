@@ -15,7 +15,7 @@ function ProductItem({ id, title, coverImage, price, score }) {
 }
 
 ProductItem.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   coverImage: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
