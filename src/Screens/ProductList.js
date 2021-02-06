@@ -5,19 +5,36 @@ class ProductList extends React.Component  {
   constructor(props) {
     super(props);
     this.state = {
-      isToggleOn: true,
-      productItems: this.props.productItems
+      productItems: this.props.productItems,
+      selectedProduct: {}
     };
 
-    this.handleClick = this.handleClick.bind(this);
+    this.IsInCart = this.isInCart.bind(this)
   }
-  handleClick() {
-    this.setState(state => ({
-      isToggleOn: !state.isToggleOn
-    }));
+  addToCart(id, title, coverImage, price) {
+    console.log("=== this.state.selectedProduct");
+    console.log()
+
+    this.setState({
+      selectedProduct: {
+        id: id,
+        title: title,
+        coverImage: coverImage,
+        price: price
+      }
+    }, function () {
+      this.props.addToCart(this.state.selectedProduct);
+    })
+  }
+  isInCart(id) {
+    let cartItems = this.props.cartItems;
+    
+    return cartItems.some(item => {
+      return item.id === id;
+    });
   }
   render() {
-    const { isToggleOn, productItems } = this.state;
+    const { productItems } = this.state;
 
     return (
       <section>
@@ -32,8 +49,15 @@ class ProductList extends React.Component  {
                   price={productItem.price} 
                   score={productItem.score}
                 />
-                <button onClick={this.handleClick}>
-                  {isToggleOn ? 'ON' : 'OFF'}
+                <button onClick={
+                  this.addToCart.bind(
+                    this,
+                    productItem.id, 
+                    productItem.title,
+                    productItem.coverImage,
+                    productItem.price
+                  )}>
+                  {this.isInCart(productItem.id) ? '빼기' : '담기'}
                 </button>
               </div>
             }) 

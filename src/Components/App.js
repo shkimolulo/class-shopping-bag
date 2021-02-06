@@ -9,9 +9,20 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      products: ProductItems,
-      cart: [],
+      productItems: ProductItems,
+      cartItems: [],
     };
+    this.handleAddToCart = this.handleAddToCart.bind(this);
+  }
+  handleAddToCart(selectedProduct) {
+    let cartItems = this.state.cartItems;
+    selectedProduct.quantity = 1;
+    cartItems.push(selectedProduct);
+
+    this.setState({
+      cartItems: cartItems,
+    })
+
   }
   render() {
     return (
@@ -26,7 +37,11 @@ class App extends React.Component {
               path="/products"
               render={props => {
                 return (
-                  <ProductList productItems={this.state.products}/>
+                  <ProductList
+                    addToCart={this.handleAddToCart}
+                    productItems={this.state.productItems}
+                    cartItems={this.state.cartItems}
+                  />
                 );
               }}
             />
@@ -35,7 +50,7 @@ class App extends React.Component {
               path="/cart"
               render={props => {
                 return (
-                  <Cart cart={this.state.cart}/>
+                  <Cart productItems={this.state.cartItems}/>
                 );
               }}
             />

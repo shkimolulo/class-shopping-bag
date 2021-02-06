@@ -1,17 +1,26 @@
 import React from "react"
 import PropTypes from "prop-types"
 
-function ProductItem({ id, title, coverImage, price, score }) {
-  return (
-    <div>
-      <img src={coverImage} alt={title} title={title}/>
+class ProductItem extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    let id = this.props.id;
+    let title = this.props.title;
+    let coverImage = this.props.coverImage;
+    let price = this.props.price;
+    
+    return (
       <div>
-        <h3>{ title }</h3>
-        <h5>{ price }</h5>
-        <h5>{ score }</h5>
+        <img src={coverImage} alt={title} title={title}/>
+        <div>
+          <h3>{ title }</h3>
+          <h5>{ price }</h5>
+        </div>
       </div>
-    </div>
-  );
+    ); 
+  }
 }
 
 ProductItem.propTypes = {
@@ -19,7 +28,6 @@ ProductItem.propTypes = {
   title: PropTypes.string.isRequired,
   coverImage: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  score: PropTypes.number.isRequired,
 }
 
 export default ProductItem;
