@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import ProductList from "../Screens/ProductList";
+import ProductItem from "./ProductItem";
 import Cart from "../Screens/Cart";
 import Header from './Header';
 import ProductItems from "../productItems"
@@ -10,13 +10,13 @@ class App extends React.Component {
     super();
     this.state = {
       cartItems: [],
+      
     };
     this.handleAddToCart = this.handleAddToCart.bind(this);
     this.handleRemoveFromCart = this.handleRemoveFromCart.bind(this);
   }
   handleAddToCart(selectedProduct) {
-    let cartItems = this.state.cartItems;
-    selectedProduct.quantity = 1;
+    let { cartItems } = this.state
     cartItems.push(selectedProduct);
 
     this.setState({
@@ -24,7 +24,7 @@ class App extends React.Component {
     })
   }
   handleRemoveFromCart(selectedProduct) {
-    let cartItems = this.state.cartItems;
+    let { cartItems } = this.state;
     let index = cartItems.findIndex(item => {
       return item.id === selectedProduct.id;
     });
@@ -32,6 +32,17 @@ class App extends React.Component {
     if (index > -1) {
       cartItems.splice(index, 1)
     } 
+
+    this.setState({
+      cartItems: cartItems,
+    })
+  }
+  isInCart(id) {
+    let { cartItems } = this.state;
+    
+    return cartItems.some(item => {
+      return item.id === id;
+    });
   }
   render() {
     return (
@@ -46,12 +57,32 @@ class App extends React.Component {
               path="/products"
               render={props => {
                 return (
-                  <ProductList
-                    addToCart={this.handleAddToCart}
-                    removeFromCart={this.handleRemoveFromCart}
-                    productItems={ProductItems}
-                    cartItems={this.state.cartItems}
-                  />
+                  <section>
+                    <div>
+                      {
+                        ProductItems.map(productItem => {
+                          return <div key={productItem.id}>
+                            <ProductItem
+                              id={productItem.id}
+                              title={productItem.title}
+                              coverImage={productItem.coverImage}
+                              price={productItem.price} 
+                              score={productItem.score}
+                            />
+                            {
+                              this.isInCart(productItem.id)
+                              ? <button onClick={() => this.handleRemoveFromCart(productItem)}>
+                                빼기
+                              </button>
+                              : <button onClick={() => this.handleAddToCart(productItem)}>
+                                담기
+                              </button>
+                            }
+                          </div>
+                        }) 
+                      }
+                    </div>
+                  </section>
                 );
               }}
             />

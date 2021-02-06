@@ -24,7 +24,6 @@ class Cart extends React.Component {
                   coverImage={productItem.coverImage}
                   price={productItem.price} 
                 />
-                <h3>개수: {productItem.quantity}</h3>
               </div>
             }) 
           }
