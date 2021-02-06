@@ -5,16 +5,12 @@ class ProductList extends React.Component  {
   constructor(props) {
     super(props);
     this.state = {
-      productItems: this.props.productItems,
-      selectedProduct: {}
+      selectedProduct: {},
     };
 
     this.IsInCart = this.isInCart.bind(this)
   }
   addToCart(id, title, coverImage, price) {
-    console.log("=== this.state.selectedProduct");
-    console.log()
-
     this.setState({
       selectedProduct: {
         id: id,
@@ -26,15 +22,24 @@ class ProductList extends React.Component  {
       this.props.addToCart(this.state.selectedProduct);
     })
   }
+  removeFromCart(id) {
+    this.setState({
+      selectedProduct: {
+        id: id
+      }
+    }, function () {
+      this.props.removeFromCart(this.state.selectedProduct);
+    })
+  }
   isInCart(id) {
-    let cartItems = this.props.cartItems;
+    let { cartItems } = this.props;
     
     return cartItems.some(item => {
       return item.id === id;
     });
   }
   render() {
-    const { productItems } = this.state;
+    const { productItems } = this.props;
 
     return (
       <section>
@@ -49,16 +54,26 @@ class ProductList extends React.Component  {
                   price={productItem.price} 
                   score={productItem.score}
                 />
-                <button onClick={
-                  this.addToCart.bind(
-                    this,
-                    productItem.id, 
-                    productItem.title,
-                    productItem.coverImage,
-                    productItem.price
-                  )}>
-                  {this.isInCart(productItem.id) ? '빼기' : '담기'}
-                </button>
+                {
+                  this.isInCart(productItem.id)
+                  ? <button onClick={
+                    this.removeFromCart.bind(
+                      this,
+                      productItem.id
+                    )}>
+                    빼기
+                  </button>
+                  : <button onClick={
+                    this.addToCart.bind(
+                      this,
+                      productItem.id,
+                      productItem.title,
+                      productItem.coverImage,
+                      productItem.price
+                    )}>
+                    담기
+                  </button>
+                }
               </div>
             }) 
           }

@@ -9,10 +9,10 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      productItems: ProductItems,
       cartItems: [],
     };
     this.handleAddToCart = this.handleAddToCart.bind(this);
+    this.handleRemoveFromCart = this.handleRemoveFromCart.bind(this);
   }
   handleAddToCart(selectedProduct) {
     let cartItems = this.state.cartItems;
@@ -22,7 +22,16 @@ class App extends React.Component {
     this.setState({
       cartItems: cartItems,
     })
+  }
+  handleRemoveFromCart(selectedProduct) {
+    let cartItems = this.state.cartItems;
+    let index = cartItems.findIndex(item => {
+      return item.id === selectedProduct.id;
+    });
 
+    if (index > -1) {
+      cartItems.splice(index, 1)
+    } 
   }
   render() {
     return (
@@ -39,7 +48,8 @@ class App extends React.Component {
                 return (
                   <ProductList
                     addToCart={this.handleAddToCart}
-                    productItems={this.state.productItems}
+                    removeFromCart={this.handleRemoveFromCart}
+                    productItems={ProductItems}
                     cartItems={this.state.cartItems}
                   />
                 );
