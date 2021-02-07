@@ -2,11 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 
 class ProductItem extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
-    let id = this.props.id;
     let title = this.props.title;
     let coverImage = this.props.coverImage;
     let price = this.props.price;

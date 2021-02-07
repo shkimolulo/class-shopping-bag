@@ -1,5 +1,3 @@
-import React from "react"
-
 const productItems = [
   {
     id: 'B9vUv0E0ibc0X55kVVLr',
