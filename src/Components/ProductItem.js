@@ -1,20 +1,36 @@
 import React from "react"
 import PropTypes from "prop-types"
+import "./ProductItem.css"
 
 class ProductItem extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.numberToWon = this.numberToWon.bind(this);
+  }
+  numberToWon(number) {
+    let reg = /(^[+-]?\d+)(\d{3})/;
+    let n = (number + '');
+ 
+    while (reg.test(n)) {
+      n = n.replace(reg, '$1' + ',' + '$2');
+    }  
+ 
+    return n;    
+  }
   render() {
     let title = this.props.title;
     let coverImage = this.props.coverImage;
-    let price = this.props.price;
+    let price = this.numberToWon(this.props.price);
     
     return (
-      <div>
+      <div className="product">
         <img src={coverImage} alt={title} title={title}/>
-        <div>
-          <h3>{ title }</h3>
-          <h5>{ price }</h5>
+        <div className="product__data">
+          <h3 className="product__title">{title}</h3>
+          <h3 className="product__price">{price} 원</h3>
         </div>
-      </div>
+      </div >
     ); 
   }
 }

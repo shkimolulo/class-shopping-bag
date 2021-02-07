@@ -6,6 +6,7 @@ import Header from './Header';
 import productItems from "../productItems";
 import coupons from "../coupons";
 import Coupon from "./Coupon";
+import "./App.css"
 
 class App extends React.Component {
   constructor() {
@@ -114,9 +115,7 @@ class App extends React.Component {
     let { cartItems } = this.state;
 
     return (
-      <section>
-        <h1>CLASS101</h1>
-        <h3>모두가 사랑하는 일을 하며 살 수 있도록</h3>
+      <section className="container">
         <Router>
           <Header />
           <Switch>
@@ -125,33 +124,33 @@ class App extends React.Component {
               path="/products"
               render={props => {
                 return (
-                  <section>
-                    <h1>상품 목록</h1>
-                    <div>
-                      {
-                        productItems.map(productItem => {
-                          return <div key={productItem.id}>
-                            <ProductItem
-                              id={productItem.id}
-                              title={productItem.title}
-                              coverImage={productItem.coverImage}
-                              price={productItem.price} 
-                              score={productItem.score}
-                            />
-                            {
-                              this.isInCart(productItem.id)
-                              ? <button onClick={() => this.handleRemoveFromCart(productItem)}>
-                                빼기
-                              </button>
-                              : <button onClick={() => this.handleAddToCart(productItem)}>
-                                담기
-                              </button>
-                            }
-                          </div>
-                        }) 
-                      }
+                    <div className="products">
+                      <h1>상품 목록</h1>
+                      <div>
+                        {
+                          productItems.map(productItem => {
+                            return <div key={productItem.id}>
+                              <ProductItem
+                                id={productItem.id}
+                                title={productItem.title}
+                                coverImage={productItem.coverImage}
+                                price={productItem.price} 
+                                score={productItem.score}
+                              />
+                              {
+                                this.isInCart(productItem.id)
+                                ? <button onClick={() => this.handleRemoveFromCart(productItem)}>
+                                  빼기
+                                </button>
+                                : <button onClick={() => this.handleAddToCart(productItem)}>
+                                  담기
+                                </button>
+                              }
+                            </div>
+                          }) 
+                        }
+                      </div>
                     </div>
-                  </section>
                 );
               }}
             />

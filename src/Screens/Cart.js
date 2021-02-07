@@ -1,6 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
-import ProductItem from "../Components/ProductItem"
+import ProductItem from "../components/ProductItem"
 
 class Cart extends React.Component {
   constructor(props) {
