@@ -1,6 +1,5 @@
 import React from "react"
 import PropTypes from "prop-types"
-import "./ProductItem.css"
 
 class ProductItem extends React.Component {
   constructor(props) {
@@ -13,7 +12,7 @@ class ProductItem extends React.Component {
     let n = (number + '');
  
     while (reg.test(n)) {
-      n = n.replace(reg, '$1' + ',' + '$2');
+      n = n.replace(reg, `$1,$2`);
     }  
  
     return n;    
@@ -24,13 +23,13 @@ class ProductItem extends React.Component {
     let price = this.numberToWon(this.props.price);
     
     return (
-      <div className="product">
-        <img src={coverImage} alt={title} title={title}/>
+      <div>
+        <img className="product__cover_image" src={coverImage} alt={title} title={title}/>
         <div className="product__data">
           <h3 className="product__title">{title}</h3>
           <h3 className="product__price">{price} 원</h3>
         </div>
-      </div >
+      </div> 
     ); 
   }
 }

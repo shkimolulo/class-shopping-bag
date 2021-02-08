@@ -6,7 +6,7 @@ class Coupon extends React.Component {
     let title = this.props.title;
     
     return (
-        <span>{title}</span >
+        <span> {title}</span>
     ); 
   }
 }

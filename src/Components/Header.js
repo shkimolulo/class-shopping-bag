@@ -1,12 +1,10 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Header = () => (
-	<div>
-    	<ul>
-    		<li><Link to="/cart">Cart</Link></li>
-        <li><Link to="/products">Product List</Link></li>
-    	</ul>
+	<div className="header">
+      <NavLink exact to="/cart" className="header__nav" activeClassName="header__active_nav">장바구니</NavLink>
+      <NavLink to="/products" className="header__nav" activeClassName="header__active_nav" >상품목록</NavLink>
 	</div>
 )
 

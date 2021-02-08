@@ -1,26 +1,57 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import ProductItem from "./ProductItem";
-import Cart from "../Screens/Cart";
-import Header from './Header';
-import productItems from "../productItems";
-import coupons from "../coupons";
-import Coupon from "./Coupon";
+import Cart from "./Cart";
+import Header from "./Header";
+import productItems from "../api/productItems";
+import Pagination from "react-pagination-library";
 import "./App.css"
+import "react-pagination-library/build/css/index.css";
 
 class App extends React.Component {
   constructor() {
     super();
+
+    this.sortProductItemsByScore(productItems);
+    const dataOfPerPage = 5;
+    let chunkedProductItems = this.chunkProductItems(dataOfPerPage);
+
     this.state = {
       cartItems: [],
-      payingCartItems: [],
-      usingCouponItem: [],
+      currentPage: 1,
+      currentDataOfPage: chunkedProductItems[0],
+      chunkedProductItems: chunkedProductItems,
     };
+
+    this.chunkProductItems = this.chunkProductItems.bind(this);
     this.handleAddToCart = this.handleAddToCart.bind(this);
     this.handleRemoveFromCart = this.handleRemoveFromCart.bind(this);
-    this.handleCouponCheckboxChange = this.handleCouponCheckboxChange.bind(this);
     this.setCartItems = this.setCartItems.bind(this);
-    this.calculateTotalPrice = this.calculateTotalPrice.bind(this);
+    this.changeCurrentPage = this.changeCurrentPage.bind(this);
+  }
+  sortProductItemsByScore(productItems) {
+    productItems.sort(function (a, b) {
+      if (a.score < b.score) {
+        return 1;
+      }
+      if (a.score > b.score) {
+        return -1;
+      }
+      return 0;
+    });
+  }
+  chunkProductItems(size) {
+    const chunked = [];
+    let index = 0;
+  
+    while (index < productItems.length) {
+      chunked.push(productItems.slice(index, index + size));
+      index += size;
+    }
+
+    this.setState({ chunkedProductItems: chunked });
+
+    return chunked;
   }
   handleAddToCart(selectedProduct) {
     let { cartItems } = this.state;
@@ -32,9 +63,7 @@ class App extends React.Component {
     selectedProduct.quantity = 1;
     cartItems.push(selectedProduct);
 
-    this.setState({
-      cartItems: cartItems,
-    });
+    this.setState({ cartItems: cartItems });
   }
   handleRemoveFromCart(selectedProduct) {
     let { cartItems } = this.state;
@@ -46,15 +75,7 @@ class App extends React.Component {
       cartItems.splice(index, 1);
     } 
 
-    this.setState({
-      cartItems: cartItems,
-    });
-  }
-  handleCouponCheckboxChange(event) {
-    const target = event.target;
-    const targetCoupon = coupons.find(item => item.title === target.value);
-
-    this.setState({ usingCouponItem: targetCoupon });
+    this.setState({ cartItems: cartItems });
   }
   isInCart(id) {
     let { cartItems } = this.state;
@@ -63,133 +84,81 @@ class App extends React.Component {
       return item.id === id;
     });
   }
-  calculateTotalPrice() {
-    let { cartItems, usingCouponItem } = this.state;
-    let totalPrice = 0;
-
-    cartItems.forEach(item => {
-      totalPrice += item.price * item.quantity;
-    });
-    
-    let totalPriceOfAvailableCoupon = 0;
-    let totalPriceOfNotAvailableCoupon = 0;
-
-    if (usingCouponItem.type === 'amount') {
-      if (totalPriceOfAvailableCoupon === 0 && totalPriceOfNotAvailableCoupon === 0)
-        cartItems.forEach(cartItem => {
-          if (cartItem.availableCoupon !== false) {
-            totalPriceOfAvailableCoupon += cartItem.price;
-          } else {
-            totalPriceOfNotAvailableCoupon += cartItem.price;
-          }
-        })
-
-        let isLessThanDiscountAmount = totalPriceOfAvailableCoupon - usingCouponItem.discountAmount < 0
-        if (isLessThanDiscountAmount) {
-          totalPriceOfAvailableCoupon = 0;
-        } else {
-          totalPriceOfAvailableCoupon -= usingCouponItem.discountAmount;
-        }
-        totalPrice = totalPriceOfAvailableCoupon + totalPriceOfNotAvailableCoupon;
-    } else if (usingCouponItem.type === 'rate') {
-      cartItems.forEach(cartItem => {
-        if (cartItem.availableCoupon !== false) {
-          totalPriceOfAvailableCoupon += cartItem.price;
-        } else {
-          totalPriceOfNotAvailableCoupon += cartItem.price;
-        }
-      })
-
-      totalPriceOfAvailableCoupon = totalPriceOfAvailableCoupon * (100 - usingCouponItem.discountRate) * 0.01
-      totalPrice = totalPriceOfAvailableCoupon + totalPriceOfNotAvailableCoupon;
-    }
-
-    return totalPrice;
-  }
   setCartItems(cartItems) {
-    this.setState({
-      cartItems: cartItems,
-    })
+    this.setState({ cartItems: cartItems });
   }
+  changeCurrentPage(numPage) {
+    let { chunkedProductItems } = this.state;
+
+    this.setState({ currentPage: numPage });
+    this.setState({ currentDataOfPage: chunkedProductItems[numPage - 1] });
+  };
   render() {
-    let { cartItems } = this.state;
+    let { cartItems, currentPage, currentDataOfPage, chunkedProductItems } = this.state;
 
     return (
-      <section className="container">
+      <div className="container">
         <Router>
           <Header />
-          <Switch>
-            <Route
-              exact
-              path="/products"
-              render={props => {
-                return (
-                    <div className="products">
-                      <h1>상품 목록</h1>
-                      <div>
-                        {
-                          productItems.map(productItem => {
-                            return <div key={productItem.id}>
-                              <ProductItem
-                                id={productItem.id}
-                                title={productItem.title}
-                                coverImage={productItem.coverImage}
-                                price={productItem.price} 
-                                score={productItem.score}
-                              />
+          <section>
+          <div className="products">
+            <Switch>
+              <Route
+                exact
+                path="/products"
+                render={props => {
+                  return (
+                    <div>
+                      <h1>상품목록</h1>
+                      {
+                        currentDataOfPage.map(productItem => {
+                          return <div key={productItem.id} className="product">
+                            <ProductItem
+                              id={productItem.id}
+                              title={productItem.title}
+                              coverImage={productItem.coverImage}
+                              price={productItem.price} 
+                              score={productItem.score}
+                            />
                               {
                                 this.isInCart(productItem.id)
                                 ? <button onClick={() => this.handleRemoveFromCart(productItem)}>
-                                  빼기
+                                  <img alt="장바구니 빼기" src="http://simpleicon.com/wp-content/uploads/Shopping-Cart-10-64x64.png"></img>  
                                 </button>
                                 : <button onClick={() => this.handleAddToCart(productItem)}>
-                                  담기
+                                  <img alt="장바구니 담기" src="http://simpleicon.com/wp-content/uploads/Shopping-Cart-15-64x64.png"></img>
                                 </button>
                               }
-                            </div>
-                          }) 
-                        }
-                      </div>
+                          </div>
+                        }) 
+                      }
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={chunkedProductItems.length}
+                        changeCurrentPage={this.changeCurrentPage}
+                        theme="bottom-border"
+                      />
                     </div>
-                );
-              }}
-            />
-            <Route
-              exact
-              path="/cart"
-              render={props => {
-                return (
-                  <section>
-                    <h1>장바구니</h1>
-                    <Cart productItems={cartItems} setCartItems={this.setCartItems}/>
-                    <h1>쿠폰</h1>
-                    <form>
-                    {
-                      coupons.map(coupon => {
-                        return (
-                          <span key={coupon.title}>
-                            <input
-                              name="isSelectedCoupon"
-                              type="radio"
-                              value={coupon.title}
-                              onChange={this.handleCouponCheckboxChange}
-                            />
-                            <Coupon title={coupon.title}></Coupon>
-                            <br/>
-                          </span>
-                        );
-                      })
-                    }
-                    </form>
-                    <h1>총 결제금액</h1>
-                    <div>{this.calculateTotalPrice()}</div>
-                  </section>
-                );
-              }}
-            />
-          </Switch>
+                  );
+                }}
+              />
+              <Route
+                exact
+                path="/cart"
+                render={props => {
+                  return (
+                    <div>
+                      <h1>장바구니</h1>
+                      <Cart productItems={cartItems} setCartItems={this.setCartItems}/>
+                    </div>
+                  );
+                }}
+              />
+            </Switch>
+          </div>
+          </section>
         </Router>
-      </section>
+      </div>
     )
   }
 }
